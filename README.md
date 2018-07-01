@@ -1,24 +1,37 @@
-# NameFuzzyMatching
+# Python scripts for Fuzzy Name Matching problem for ING
 
-###All data is provided as plain text column separated files:
-* Column separated by ‘|’ (bar), one line per entry;
-* the test set will have the same size as STrain provided to you now (hence, no memory issues during test).
-###We provide you up-front with three datasets: G, STrain and sample_submission
-* G has as columns:
-    * company_id: the id of the company in our ground-truth administration 
-    * name: the name of the company in our ground-truth administration
-* STrain has as columns:
-    * train_index: an index of the company in the external source dataset;
-    * name: the name of the company as represented in the external source dataset;
-    * company_id: the correct match of this entry to G. Is -1 if correct label is ‘not in G’, otherwise corresponds to G_id
-* sample_submission has as columns:
-    * test_index: index of the company in an external source dataset (note: different index from STrain, full STest will only be provided during the interview); 
-    * company_id: the predicted match of this entry to G. Note that in this file, these are randomly generated predictions.
+Scripts that run on the command line, i.e. *Terminal* on Mac OS X, and *Command Prompt* on Windows.
 
-###You need to design, code and train a model that predicts company_id, minimizing the cost function as specified on the previous page 
-###Please make sure that your trained model:
+The codes are built using Python 3.6.4 on Anaconda
 
-* accepts as input a plain text file of the format STest, containing two columns test_index and name;
-* runs from the command line, using as input the path to the file STest;
-* prediction time should be ‘near real time’, i.e. about 1 minute for 10,000 entries (on a regular laptop);
-* It should return a file with the above plain text format, including the columns test_index and company_id (an example submission is provided).
+## Description
+
+### `executeNameMatching.py`
+This script takes the external source dataset test file as the input and calls the class which executes the name matching against the ground truth of names.
+
+Use the below command to execute the script:
+`python executeNameMatching.py -i filename`
+`-i`: argument for input filename
+
+It creates an output file `result.csv` in the execution directory with columns
+    * test_index: index of the company in an external source dataset 
+    * company_id: the predicted match of this entry to G.
+
+Command line outputs: `Time for execution` which gives the execution time in seconds
+
+#### Dependencies
+`ground_truth.npz` - tf-idf matrix of the ground truth dataset during training
+`vectorizer.pickle` - vectorizer used to transform the ground truth dataset
+---
+
+### `nameMatching.py`
+
+Defines the class `FuzzyNameMatching` which includes the below steps:
+*	Slice the external source dataset into slices of 10,000 names each
+*	Pre-process the external source dataset and converts to tf-idf sparse matrix
+*	Compute dot product of test set tf-idf matrix with ground truth tf-idf matrix
+*	Select top one similarity result from the resulting matrix
+*	Save the final result as csv file
+---
+
+
